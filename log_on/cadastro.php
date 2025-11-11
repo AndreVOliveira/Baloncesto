@@ -51,18 +51,31 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <title>Cadastro</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h2>Cadastro</h2>
-    <form method="post" action="">
-        Nome: <input type="text" name="nome" required><br>
-        Email: <input type="email" name="email" required><br>
-        Senha: <input type="password" name="senha" required><br>
-        Telefone: <input type="number" name="telefone" required><br>
-        <input type="submit" value="Cadastrar">
-    </form>
-    <?php if ($message) echo "<p>$message</p>"; ?>
-    <br>
-    <a href="log_in.php"><button>Log In</button></a>
+    <header>
+        <h1>Cadastro</h1>
+    </header>
+    <div class="form-container">
+        <h2>Cadastro</h2>
+        <form method="post" action="">
+            <label for="nome">Nome:</label>
+            <input type="text" name="nome" id="nome" required><br>
+            <label for="email">Email:</label>
+            <input type="email" name="email" id="email" required><br>
+            <label for="senha">Senha:</label>
+            <input type="password" name="senha" id="senha" required><br>
+            <label for="telefone">Telefone:</label>
+            <input type="number" name="telefone" id="telefone" required><br>
+            <input type="submit" value="Cadastrar">
+        </form>
+        <?php if ($message) echo "<p>$message</p>"; ?>
+        <br>
+        <a href="log_in.php"><button>Log In</button></a>
+    </div>
+    <footer>
+        <p>&copy; 2023 Baloncesto</p>
+    </footer>
 </body>
 </html>

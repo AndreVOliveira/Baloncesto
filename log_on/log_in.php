@@ -41,16 +41,27 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <title>Log In</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h2>Log In</h2>
-    <form method="post" action="">
-        Email: <input type="email" name="email" required><br>
-        Senha: <input type="password" name="senha" required><br>
-        <input type="submit" value="Log In">
-    </form>
-    <?php if ($message) echo "<p>$message</p>"; ?>
-    <br>
-    <a href="cadastro.php"><button>Cadastrar</button></a>
+    <header>
+        <h1>Log In</h1>
+    </header>
+    <div class="form-container">
+        <h2>Log In</h2>
+        <form method="post" action="">
+            <label for="email">Email:</label>
+            <input type="email" name="email" id="email" required><br>
+            <label for="senha">Senha:</label>
+            <input type="password" name="senha" id="senha" required><br>
+            <input type="submit" value="Log In">
+        </form>
+        <?php if ($message) echo "<p>$message</p>"; ?>
+        <br>
+        <a href="cadastro.php"><button>Cadastrar</button></a>
+    </div>
+    <footer>
+        <p>&copy; 2023 Baloncesto</p>
+    </footer>
 </body>
 </html>
