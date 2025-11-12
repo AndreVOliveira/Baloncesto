@@ -13,26 +13,26 @@ telefone varchar(20) not null,
 data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
-    Create table equipes (
-    equipe_id int not null auto_increment primary key,
-    nome_equipe varchar (75) not null,
-    cidade varchar (75) not null,
-    conferencia varchar(50),
-    abreviacao varchar(10)
-    )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
-    Create table jogadores (
-    id_jogador int not null auto_increment primary key,
-    equipe_id int not null,
-    primeiro_nome varchar(50) not null ,
-    ultimo_nome varchar(50) not null,
-    posicao varchar(10) not null,
-    idade int,
-    numero_camisa varchar(10),
-    FOREIGN KEY (equipe_id) REFERENCES equipes (equipe_id)
-    )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-    
-   CREATE TABLE partidas (
+CREATE TABLE equipes (
+    equipe_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    nome_equipe VARCHAR(75) NOT NULL,
+    cidade VARCHAR(75) NOT NULL,
+    conferencia VARCHAR(50),
+    divisao VARCHAR(50),
+    abreviacao VARCHAR(10)
+) ENGINE=InnoDB;
+
+CREATE TABLE jogadores (
+    id_jogador INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    equipe_id INT NOT NULL,
+    primeiro_nome VARCHAR(50) NOT NULL,
+    ultimo_nome VARCHAR(50) NOT NULL,
+    posicao VARCHAR(10),
+    FOREIGN KEY (equipe_id) REFERENCES equipes(equipe_id)
+) ENGINE=InnoDB;
+
+CREATE TABLE partidas (
     id_partida INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     data_partida DATE NOT NULL,
     equipe_casa_id INT NOT NULL,
@@ -41,4 +41,4 @@ data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     placar_visitante INT DEFAULT 0,
     FOREIGN KEY (equipe_casa_id) REFERENCES equipes(equipe_id),
     FOREIGN KEY (equipe_visitante_id) REFERENCES equipes(equipe_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB;
