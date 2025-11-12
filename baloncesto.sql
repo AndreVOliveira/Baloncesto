@@ -18,9 +18,8 @@ data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     nome_equipe varchar (75) not null,
     cidade varchar (75) not null,
     conferencia varchar(50),
-    divisao varchar(50),
     abreviacao varchar(10)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+    )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
     Create table jogadores (
     id_jogador int not null auto_increment primary key,
@@ -28,8 +27,10 @@ data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     primeiro_nome varchar(50) not null ,
     ultimo_nome varchar(50) not null,
     posicao varchar(10) not null,
+    idade int,
+    numero_camisa varchar(10),
     FOREIGN KEY (equipe_id) REFERENCES equipes (equipe_id)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+    )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
     
    CREATE TABLE partidas (
     id_partida INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
