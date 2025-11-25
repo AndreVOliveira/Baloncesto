@@ -16,7 +16,6 @@ function chamarAPI($endpoint) {
     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
     curl_setopt($ch, CURLOPT_TIMEOUT, 20);
 
-    // troque SUA_CHAVE_AQUI pelo token real
     $headers = [
         "Authorization: Bearer c0f7ac0f-5c5d-4713-847d-7b2afbe9fbe9",
         "Accept: application/json"
@@ -53,85 +52,88 @@ function salvarJSON($nomeArquivo, $dados) {
 }
 
 /* ===================== EQUIPES ===================== */
-echo "Importando equipes...\n";
-$dadosEquipes = chamarAPI("teams");
-if ($dadosEquipes && isset($dadosEquipes['data']) && is_array($dadosEquipes['data'])) {
-    salvarJSON("equipes", $dadosEquipes);
+echo "Importando equipes do JSON...\n";
+$arquivo = __DIR__ . "/json/equipes.json";
+
+if (file_exists($arquivo)) {
+    $dadosEquipes = json_decode(file_get_contents($arquivo), true);
+
     foreach ($dadosEquipes['data'] as $team) {
+
+        $id = intval($team['id'] ?? 0);
         $nome = $conn->real_escape_string($team['full_name'] ?? '');
         $cidade = $conn->real_escape_string($team['city'] ?? '');
         $conferencia = $conn->real_escape_string($team['conference'] ?? '');
         $divisao = $conn->real_escape_string($team['division'] ?? '');
         $abreviacao = $conn->real_escape_string($team['abbreviation'] ?? '');
 
-        if ($nome === '') continue;
-        $sql = "INSERT IGNORE INTO equipes (nome_equipe, cidade, conferencia, divisao, abreviacao)
-                VALUES ('$nome', '$cidade', '$conferencia', '$divisao', '$abreviacao')";
+        if ($id === 0) continue;
+
+        $sql = "INSERT INTO equipes (equipe_id, nome_equipe, cidade, conferencia, divisao, abreviacao)
+                VALUES ($id, '$nome', '$cidade', '$conferencia', '$divisao', '$abreviacao')
+                ON DUPLICATE KEY UPDATE nome_equipe='$nome'";
         $conn->query($sql);
     }
-    echo "Equipes importadas: " . count($dadosEquipes['data']) . "\n";
+
+    echo "✅ Equipes importadas do JSON!\n";
 } else {
-    echo "Falha ao obter dados de equipes. Verifique mensagens acima.\n";
+    echo "❌ Arquivo equipes.json não encontrado!\n";
 }
 
+
 /* ===================== JOGADORES ===================== */
-echo "Importando jogadores...\n";
-$page = 1;
+echo "Importando jogadores do JSON...\n";
 $totalJogadores = 0;
-$allPlayers = [];
 
-do {
-    $endpoint = "players?page=$page&per_page=100";
-    $dadosJogadores = chamarAPI($endpoint);
-    if (!$dadosJogadores || empty($dadosJogadores['data'])) break;
+for ($page = 1; ; $page++) {
 
-    salvarJSON("jogadores_page_$page", $dadosJogadores);
-    if (isset($dadosJogadores['data']) && is_array($dadosJogadores['data'])) {
-        foreach ($dadosJogadores['data'] as $jogador) {
-            $primeiro = $conn->real_escape_string($jogador["first_name"] ?? '');
-            $ultimo = $conn->real_escape_string($jogador["last_name"] ?? '');
-            $posicao = $conn->real_escape_string($jogador["position"] ?? '');
-            $teamABV = $conn->real_escape_string($jogador["team"]["abbreviation"] ?? '');
+    $arquivo = __DIR__ . "/json/jogadores_page_$page.json";
+    if (!file_exists($arquivo)) break;
 
-            if ($teamABV === '') continue;
+    $dadosJogadores = json_decode(file_get_contents($arquivo), true);
 
-            $res = $conn->query("SELECT equipe_id FROM equipes WHERE abreviacao='$teamABV' LIMIT 1");
-            if ($res && $res->num_rows > 0) {
-                $equipe_id = intval($res->fetch_assoc()["equipe_id"]);
-                $sql = "INSERT IGNORE INTO jogadores (equipe_id, primeiro_nome, ultimo_nome, posicao)
-                        VALUES ($equipe_id, '$primeiro', '$ultimo', '$posicao')";
-                $conn->query($sql);
-                $totalJogadores++;
-            }
+    foreach ($dadosJogadores['data'] as $jogador) {
+
+        $primeiro = $conn->real_escape_string($jogador["first_name"] ?? '');
+        $ultimo = $conn->real_escape_string($jogador["last_name"] ?? '');
+        $posicao = $conn->real_escape_string($jogador["position"] ?? '');
+        $teamABV = $conn->real_escape_string($jogador["team"]["abbreviation"] ?? '');
+
+        if ($teamABV === '') continue;
+
+        $res = $conn->query("SELECT equipe_id FROM equipes WHERE abreviacao='$teamABV' LIMIT 1");
+        if ($res && $res->num_rows > 0) {
+            $equipe_id = intval($res->fetch_assoc()["equipe_id"]);
+            $sql = "INSERT IGNORE INTO jogadores (equipe_id, primeiro_nome, ultimo_nome, posicao)
+                    VALUES ($equipe_id, '$primeiro', '$ultimo', '$posicao')";
+            $conn->query($sql);
+            $totalJogadores++;
         }
     }
 
-    echo "Página $page importada: " . count($dadosJogadores['data']) . " jogadores\n";
-    $page++;
-    sleep(1);
-} while (!empty($dadosJogadores["meta"]["next_page"]));
+    echo "Página $page importada do JSON\n";
+}
 
-salvarJSON("jogadores_completo", ["data" => $allPlayers]);
-echo "Total de jogadores importados: $totalJogadores\n";
+echo "✅ Total jogadores importados: $totalJogadores\n";
 
 /* ===================== PARTIDAS ===================== */
-echo "Importando partidas (temporada 2023)...\n";
-$page = 1;
+echo "Importando partidas do JSON...\n";
 $totalPartidas = 0;
 
-do {
-    $endpoint = "games?seasons[]=2023&page=$page&per_page=100";
-    $dadosPartidas = chamarAPI($endpoint);
-    if (!$dadosPartidas || empty($dadosPartidas['data'])) break;
+for ($page = 1; ; $page++) {
 
-    salvarJSON("partidas_page_$page", $dadosPartidas);
+    $arquivo = __DIR__ . "/json/partidas_page_$page.json";
+    if (!file_exists($arquivo)) break;
+
+    $dadosPartidas = json_decode(file_get_contents($arquivo), true);
 
     foreach ($dadosPartidas['data'] as $game) {
+
         $data = substr($game['date'] ?? '', 0, 10);
         $home_abv = $game['home_team']['abbreviation'] ?? '';
         $visit_abv = $game['visitor_team']['abbreviation'] ?? '';
-        $placar_casa = isset($game['home_team_score']) ? intval($game['home_team_score']) : 0;
-        $placar_visit = isset($game['visitor_team_score']) ? intval($game['visitor_team_score']) : 0;
+        $placar_casa = intval($game['home_team_score'] ?? 0);
+        $placar_visit = intval($game['visitor_team_score'] ?? 0);
 
         if ($home_abv === '' || $visit_abv === '') continue;
 
@@ -141,6 +143,7 @@ do {
         if ($resHome && $resVisit && $resHome->num_rows > 0 && $resVisit->num_rows > 0) {
             $id_casa = intval($resHome->fetch_assoc()["equipe_id"]);
             $id_visit = intval($resVisit->fetch_assoc()["equipe_id"]);
+
             $sql = "INSERT IGNORE INTO partidas (data_partida, equipe_casa_id, equipe_visitante_id, placar_casa, placar_visitante)
                     VALUES ('$data', $id_casa, $id_visit, $placar_casa, $placar_visit)";
             $conn->query($sql);
@@ -148,11 +151,7 @@ do {
         }
     }
 
-    echo "Página $page de partidas importada: " . count($dadosPartidas['data']) . " jogos\n";
-    $page++;
-    sleep(1);
-} while (!empty($dadosPartidas["meta"]["next_page"]));
+    echo "Página $page de partidas importada do JSON\n";
+}
 
-echo "Total de partidas importadas: $totalPartidas\n";
-$conn->close();
-?>
+echo "✅ Total partidas importadas: $totalPartidas\n";

@@ -4,16 +4,6 @@ default collate utf8_general_ci;
 
 use basquete;
 
-Create table cadastro(
-id_cadastro int not null auto_increment primary key,
-nome varchar(75) not null,
-email varchar(50) not null unique,
-senha varchar(50) not null,
-telefone varchar(20) not null,
-data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
-
 CREATE TABLE equipes (
     equipe_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     nome_equipe VARCHAR(75) NOT NULL,
