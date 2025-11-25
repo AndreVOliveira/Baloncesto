@@ -1,5 +1,5 @@
 <?php
-include_once("../conexao.php");
+include_once(dirname(__FILE__) . "/../../conexao.php");
 
 $resultado_partidas = $conn->query("
     SELECT p.id_partida,
@@ -13,6 +13,10 @@ $resultado_partidas = $conn->query("
     JOIN equipes e2 ON p.equipe_visitante_id = e2.equipe_id
 ");
 
+if (!$resultado_partidas) {
+    die("Erro na consulta de partidas: " . $conn->error);
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -20,10 +24,11 @@ $resultado_partidas = $conn->query("
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Partidas de Basquete</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <h1>Partidas de Basquete</h1>
-    <table border="1">
+    <table>
         <thead>
             <tr>
                 <th>ID</th>
@@ -37,12 +42,12 @@ $resultado_partidas = $conn->query("
         <tbody>
             <?php while ($row = $resultado_partidas->fetch_assoc()): ?>
                 <tr>
-                    <td><?php echo $row['id_partida']; ?></td>
-                    <td><?php echo $row['data_partida']; ?></td>
-                    <td><?php echo $row['equipe_casa']; ?></td>
-                    <td><?php echo $row['equipe_visitante']; ?></td>
-                    <td><?php echo $row['placar_casa']; ?></td>
-                    <td><?php echo $row['placar_visitante']; ?></td>
+                    <td data-label="ID"><?php echo htmlspecialchars($row['id_partida']); ?></td>
+                    <td data-label="Data"><?php echo htmlspecialchars(date('d/m/Y', strtotime($row['data_partida']))); ?></td>
+                    <td data-label="Time Casa"><?php echo htmlspecialchars($row['equipe_casa']); ?></td>
+                    <td data-label="Time Visitante"><?php echo htmlspecialchars($row['equipe_visitante']); ?></td>
+                    <td data-label="Pontos Casa"><?php echo htmlspecialchars($row['placar_casa']); ?></td>
+                    <td data-label="Pontos Visitante"><?php echo htmlspecialchars($row['placar_visitante']); ?></td>
                 </tr>
             <?php endwhile; ?>
         </tbody>
