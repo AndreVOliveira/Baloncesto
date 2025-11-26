@@ -47,8 +47,11 @@ if (!$resultado_partidas) {
                     <td data-label="Time Casa"><?php echo htmlspecialchars($row['equipe_casa']); ?></td>
                     <td data-label="Time Visitante"><?php echo htmlspecialchars($row['equipe_visitante']); ?></td>
                     <td data-label="Pontos Casa"><?php echo htmlspecialchars($row['placar_casa']); ?></td>
-                    <td data-label="Pontos Visitante"><?php echo htmlspecialchars($row['placar_visitante']); ?></td>
-                </tr>
+                     <td data-label="Pontos Visitante"><?php echo htmlspecialchars($row['placar_visitante']); ?></td>
+                <td><a href="editar.php?id=<?php echo htmlspecialchars($row['id_partida']); ?>">Editar</a> | 
+                    <a href="deletar.php?id=<?= $row['id_partida'] ?>">Excluir</a></td>
+
+                    </tr>
             <?php endwhile; ?>
         </tbody>
     </table>

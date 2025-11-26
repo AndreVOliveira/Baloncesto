@@ -1,18 +1,18 @@
 <?php
 include_once(dirname(__FILE__) . "/../../conexao.php");
 
-$resultado_jogadores = $conn->query("
-    SELECT j.id_jogador,
-           j.primeiro_nome,
-           j.ultimo_nome,
-           j.posicao,
-           e.nome_equipe
-    FROM jogadores j
-    JOIN equipes e ON j.equipe_id = e.equipe_id
+$equipes = $conn->query("
+    SELECT e.equipe_id,
+           e.nome_equipe,
+           e.cidade,
+           e.conferencia,
+           e.divisao,
+           e.abreviacao
+    FROM equipes e
 ");
 
-if (!$resultado_jogadores) {
-    die("Erro na consulta de jogadores: " . $conn->error);
+if (!$equipes) {
+    die("Erro na consulta de equipes: " . $conn->error);
 }
 
 ?>
@@ -21,30 +21,35 @@ if (!$resultado_jogadores) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jogadores de Basquete</title>
+    <title>Equipes de Basquete</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Jogadores de Basquete</h1>
+    <h1>Partidas de Basquete</h1>
     <table>
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Equipe</th>
-                <th>Primeiro Nome</th>
-                <th>Último Nome</th>
-                <th>Posição</th>
+                <th>Nome</th>
+                <th>Cidade</th>
+                <th>Conferencia</th>
+                <th>Divisão</th>
+                <th>Abrevição</th>
             </tr>
         </thead>
         <tbody>
-            <?php while ($row = $resultado_jogadores->fetch_assoc()): ?>
+            <?php while ($row = $equipes->fetch_assoc()): ?>
                 <tr>
-                    <td data-label="ID"><?php echo htmlspecialchars($row['id_jogador']); ?></td>
-                    <td data-label="EQUIPE"><?php echo htmlspecialchars($row['nome_equipe']); ?></td>
-                    <td data-label="PRIMEIRO NOME"><?php echo htmlspecialchars($row['primeiro_nome']); ?></td>
-                    <td data-label="ÚLTIMO NOME"><?php echo htmlspecialchars($row['ultimo_nome']); ?></td>
-                    <td data-label="POSIÇÃO"><?php echo htmlspecialchars($row['posicao']); ?></td>
-                </tr>
+                    <td data-label="ID"><?php echo htmlspecialchars($row['equipe_id']); ?></td>
+                    <td data-label="Nome"><?php echo htmlspecialchars( $row['nome_equipe']); ?></td>
+                    <td data-label="Cidade"><?php echo htmlspecialchars($row['cidade']); ?></td>
+                    <td data-label="Conferência"><?php echo htmlspecialchars($row['conferencia']); ?></td>
+                    <td data-label="Divisão"><?php echo htmlspecialchars($row['divisao']); ?></td>
+                     <td data-label="Abreviação"><?php echo htmlspecialchars($row['abreviacao']); ?></td>
+                <td><a href="editar.php?id=<?php echo htmlspecialchars($row['equipe_id']); ?>">Editar</a> | 
+                    <a href="deletar.php?id=<?= $row['equipe_id'] ?>">Excluir</a></td>
+
+                    </tr>
             <?php endwhile; ?>
         </tbody>
     </table>

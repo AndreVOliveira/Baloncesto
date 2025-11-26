@@ -15,7 +15,7 @@
             <ul class="nav-list">
                 <li><a href="tabelas/partidas/partidas.php" class="nav-link">Partidas</a></li>
                 <li><a href="tabelas/equipes/equipes.php" class="nav-link">Equipes</a></li>
-                <li><a href="jogadores.php" class="nav-link">Jogadores</a></li>
+                <li><a href="tabelas/jogadores/jogadores.php" class="nav-link">Jogadores</a></li>
             </ul>
         </nav>
     </header>
